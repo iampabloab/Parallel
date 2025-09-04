@@ -34,7 +34,7 @@ CLASS zcl_parallel_mdsr_api DEFINITION
                   iv_taskname TYPE string,
 
       callback_form
-        IMPORTING taskname TYPE string.
+        IMPORTING p_task TYPE any.
 ENDCLASS.
 
 CLASS zcl_parallel_mdsr_api IMPLEMENTATION.
@@ -81,7 +81,7 @@ CLASS zcl_parallel_mdsr_api IMPLEMENTATION.
   METHOD start_task.
     CALL FUNCTION 'MD_STOCK_REQUIREMENTS_LIST_API'
       STARTING NEW TASK iv_taskname
-      PERFORMING callback_form ON END OF TASK
+      calling callback_form ON END OF TASK
       EXPORTING
         material = is_input-matnr
         plant    = is_input-werks
@@ -108,12 +108,12 @@ CLASS zcl_parallel_mdsr_api IMPLEMENTATION.
         OTHERS = 3.
 
     IF sy-subrc <> 0.
-      APPEND |Error al recibir resultados de tarea { taskname }| TO mt_errors.
+      APPEND |Error al recibir resultados de tarea { p_task }| TO mt_errors.
     ELSE.
       APPEND LINES OF lt_result TO mt_result.
     ENDIF.
 
-    DELETE mt_active_tasks WHERE table_line = taskname.
+    DELETE mt_active_tasks WHERE table_line = p_task.
   ENDMETHOD.
 
 ENDCLASS.
